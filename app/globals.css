@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #F2E9DC;
+  --foreground: #1D1D1D;
+  --primary: #1D1D1D;
+  --primary-foreground: #FFFFFF;
+  --secondary: #E63946;
+  --secondary-foreground: #FFFFFF;
+  --radius: 0.75rem;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-secondary transition-colors;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-primary transition-colors;
+  }
+
+  .heading-1 {
+    @apply text-heading-1 font-bold;
+  }
+
+  .heading-2 {
+    @apply text-heading-2 font-bold;
+  }
+
+  .body-text {
+    @apply text-body;
+  }
+}

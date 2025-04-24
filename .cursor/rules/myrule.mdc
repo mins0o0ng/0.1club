@@ -1,0 +1,31 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Your rule content
+
+문맥 중심 · 단일 흐름 설계
+페이지 단위로 각 주요 기능은 하나의 파일로 시작하고, 파일 앞부분에 임포트, 타입 선언, UI 컴포넌트 상수, 상태 훅 호출, JSX 반환 순으로 배치합니다. 데이터 변환·검증·API 호출 같은 복잡 로직만 lib 또는 hooks 폴더의 단일 파일로 분리합니다.
+
+기능별 파일 분할 기준
+서로 다른 사용자 흐름(예: 랜딩/소개, 회원가입 흐름, 대시보드, 설정)마다 별도의 파일을 둡니다. 파일 내 로직과 JSX가 과도하게 많아지면 해당 기능 단위로 page.tsx 외에 onboarding.tsx, dashboard.tsx, settings.tsx 같은 파일을 추가합니다.
+
+Tailwind 전용 · 테마 토큰 도입
+모든 스타일은 Tailwind 클래스명 조합으로만 처리하고, 자주 바뀌는 컬러·간격·폰트 등은 tailwind.config.ts의 theme.extend에 정의한 디자인 토큰과 globals.css의 CSS 변수로 관리합니다. 전역 디자인 변경 시에는 CSS 변수만 수정하면 전체가 업데이트됩니다.
+
+UI 컴포넌트 확장성 강화
+Button, Modal, Toast 등 재사용 가능한 UI 요소만 /components/ui 에 두고, variant(prop) 패턴과 기능별 네이밍(save 버튼, cancel 버튼 등)을 사용해 역할을 명확히 구분합니다.
+
+상태 · 타입 최소화
+상태 관리는 useState로 로딩, 에러, 폼 데이터 정도만 관리하며 useReducer나 외부 상태관리 라이브러리는 사용하지 않습니다. 타입은 각 파일 상단에 간단한 interface 형태로 선언하고 별도의 전역 타입 파일은 만들지 않습니다.
+
+단일 Cursor 액션(서버 함수) 관리
+클라이언트의 폼 제출부터 Notion 저장 응답 반환까지 모든 API 호출은 하나의 액션 파일(app/actions/submitUser.ts 또는 pages/api/submit.ts)만 사용합니다. UI 파일에서는 해당 액션을 import해 invoke하는 코드만 남깁니다.
+
+Notion API 집중 관리
+Notion 연동에 필요한 시크릿, 데이터베이스 ID, 변환 로직 등은 lib/notion.ts 한 곳에만 구현합니다. 다른 파일에서는 이 함수 하나만 호출하도록 제한합니다.
+
+배포 · 보안
+환경 변수(NOTION_SECRET, NOTION_DB_ID)는 .env.local에만 정의하고, Vercel(또는 Cursor→GitHub→Vercel) 자동 배포를 사용합니다. Notion 시크릿은 절대 클라이언트에 노출되지 않도록 API 라우트나 서버 액션을 통해서만 접근합니다.
