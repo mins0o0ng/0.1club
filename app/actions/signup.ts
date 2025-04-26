@@ -25,8 +25,8 @@ export async function handleSignup(data: SignupData) {
           email: data.email
         },
         Status: {
-          select: {
-            name: "Pending"
+          status: {
+            name: "시작 전"
           }
         },
         "Sign Up Date": {

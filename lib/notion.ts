@@ -5,9 +5,8 @@ export const notionConfig = {
 };
 
 export async function submitToNotion(data: any) {
-  // Implement Notion API integration here
-  // This is where all Notion-related logic should be centralized
-  return await fetch(`https://api.notion.com/v1/databases/${notionConfig.databaseId}/pages`, {
+  // Notion API에 페이지를 추가하는 엔드포인트는 /v1/pages임
+  const response = await fetch(`https://api.notion.com/v1/pages`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${notionConfig.secret}`,
@@ -16,4 +15,9 @@ export async function submitToNotion(data: any) {
     },
     body: JSON.stringify(data),
   });
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Notion API error: ${error}`);
+  }
+  return await response.json();
 } 
