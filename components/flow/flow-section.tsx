@@ -30,6 +30,7 @@ const steps = [
 
 const SCROLL_THRESHOLD = 180;
 const NOTION_URL = "https://aged-prepared-e1a.notion.site/1e1cc809550780d588a4dfdced665d93?pvs=4";
+const CENTER_ACTIVATION_RANGE = 100; // 화면 중앙에서 ±100px 이내일 때만 활성
 
 export function FlowSection({ onShareClick }: { onShareClick?: () => void } = {}) {
   const [current, setCurrent] = useState(0)
@@ -37,35 +38,51 @@ export function FlowSection({ onShareClick }: { onShareClick?: () => void } = {}
   const [showModal, setShowModal] = useState(false)
 
   useEffect(() => {
+    let lock = false;
+
     const onWheel = (e: WheelEvent) => {
-      // 카드 스택 영역이 화면에 보일 때만 동작
-      const section = document.getElementById("flow-section-sticky")
+      const section = document.getElementById("flow-section-sticky");
       if (!section) return;
+
       const rect = section.getBoundingClientRect();
-      const inView = rect.top <= window.innerHeight / 2 && rect.bottom > window.innerHeight / 2;
-      if (!inView) return;
+      const sectionCenter = rect.top + rect.height / 2;
+      const screenCenter = window.innerHeight / 2;
+
+      const centerOffset = Math.abs(sectionCenter - screenCenter);
+
+      // 중앙에 충분히 가까울 때만 작동
+      const inCenterView = centerOffset < CENTER_ACTIVATION_RANGE;
+      if (!inCenterView) return;
+
+      if (lock) {
+        e.preventDefault();
+        return;
+      }
 
       wheelAccumulator.current += e.deltaY;
-      // 아래로
-      if (wheelAccumulator.current > SCROLL_THRESHOLD && current < steps.length - 1) {
+
+      const threshold = 180;
+
+      if (wheelAccumulator.current > threshold && current < steps.length - 1) {
         e.preventDefault();
         setCurrent((prev) => Math.min(prev + 1, steps.length - 1));
         wheelAccumulator.current = 0;
-      }
-      // 위로
-      else if (wheelAccumulator.current < -SCROLL_THRESHOLD && current > 0) {
+        lock = true;
+        setTimeout(() => (lock = false), 300);
+      } else if (wheelAccumulator.current < -threshold && current > 0) {
         e.preventDefault();
         setCurrent((prev) => Math.max(prev - 1, 0));
         wheelAccumulator.current = 0;
-      }
-      // 카드가 다 안넘어갈 때는 스크롤 막기
-      else if (
+        lock = true;
+        setTimeout(() => (lock = false), 300);
+      } else if (
         (e.deltaY > 0 && current < steps.length - 1) ||
         (e.deltaY < 0 && current > 0)
       ) {
         e.preventDefault();
       }
     };
+
     window.addEventListener("wheel", onWheel, { passive: false });
     return () => window.removeEventListener("wheel", onWheel);
   }, [current]);
@@ -92,8 +109,8 @@ export function FlowSection({ onShareClick }: { onShareClick?: () => void } = {}
 
   return (
     <section id="flow-section-sticky" className="bg-[#f2e9dc] flex flex-col items-center justify-center min-h-screen py-0">
-      <div className="text-center mb-6">
-        <h2 className="text-4xl font-bold mb-2">
+      <div className="text-center mt-8 mb-6">
+        <h2 className="text-4xl font-bold mb-8">
           <span className="text-[#E63946]">실험</span>은 이렇게 진행돼요
         </h2>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -105,7 +122,7 @@ export function FlowSection({ onShareClick }: { onShareClick?: () => void } = {}
           {steps.map((step, idx) => {
             const offset = idx - current
             if (offset < 0) return null
-            if (offset > 2) return null // 완전히 투명한 박스는 렌더링하지 않음
+            if (offset > 2) return null
             return (
               <motion.div
                 key={idx}

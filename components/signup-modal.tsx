@@ -62,7 +62,7 @@ export function SignupModal({ open, onOpenChange, title, description }: SignupMo
           </DialogDescription>
         </DialogHeader>
         {isSignupModal ? (
-          <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+          <form onSubmit={handleSubmit} className="space-y-4 mt-20">
             <Input
               placeholder="이름"
               value={name}

@@ -21,7 +21,7 @@ export function ProblemSend() {
         <Input
           type="text"
           placeholder="도서관에서 콘센트 찾기 어려워요"
-          className="flex-1 rounded-xl border-2 border-[#E63946] px-8 py-6 text-lg focus:outline-none"
+          className="flex-1 rounded-xl border-2 border-[#E63946] px-8 py-6 text-lg focus:outline-none text-gray-300 opacity-70"
         />
         <Button
           className="bg-[#E63946] text-white border-2 border-white hover:bg-white hover:text-[#E63946] py-6 px-8"
